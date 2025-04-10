@@ -1,20 +1,42 @@
 import streamlit as st
 import re
+import string
+import random
 
-st.set_page_config(page_title="Password strength checker",page_icon="🔐")
-st.title("Password strength checker 🔐")
+st.set_page_config(page_title="Password strength checker & generator",page_icon="🔐")
+st.title("Password strength checker & Generator 🔐")
 st.markdown('''
-            ## Welcome to password strength checker
-            **Strengthen your password — securely and smartly.**
+            ## Welcome to our cool password app!
+            **Generate or Strengthen your password — securely and smartly.**
             ''')
-# on = st.toggle("Auto generate")
+on = st.toggle("Generate my password.")
 
-password = st.text_input("Enter your password",type="password")
+if on:
+    def generate_password(length,use_digits,use_special):
+        characters=string.ascii_letters
+        if use_digits:
+            characters+=string.digits
+        if use_special:
+            characters+=string.punctuation
+        return ''.join(random.choice(characters) for _ in range(length))
+    
+    length=st.slider('Set the range for your password',max_value=32,min_value=8)
+    use_digits=st.checkbox('Include digits')
+    use_special=st.checkbox('Include special characters')
+    
+    if st.button('Generate'):
+        password=generate_password(length,use_digits,use_special)
+        st.write(f'Password: `{password}`')
+    
+        
 
-tips =  []
-score=0
+else:
+ password = st.text_input("Enter your password",type="password")
 
-if password:
+ tips =  []
+ score=0
+
+ if password:
     if len(password)>=8:
         score+=1
     else:
@@ -33,7 +55,7 @@ if password:
     else:
         tips.append("❌Incorporate numbers into your password to add complexity. ")
         
-    if re.search(r'[@#$%*]',password):
+    if re.search(r'[@#$%*&}_;,]',password):
         score+=1
     else:
         tips.append("❌Add special characters (e.g., @, #, $, %) to make your password more secure and harder to crack")     
